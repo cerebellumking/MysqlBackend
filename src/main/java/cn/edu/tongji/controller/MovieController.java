@@ -1,12 +1,10 @@
 package cn.edu.tongji.controller;
 
 import cn.edu.tongji.service.impl.MovieServiceImpl;
-import lombok.Getter;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import javax.management.ValueExp;
 import java.util.Map;
 
 @RestController
@@ -41,8 +39,8 @@ public class MovieController {
             @RequestParam(value = "day",required = false) Integer day,
             @RequestParam(value = "season",required = false) Integer season,
             @RequestParam(value = "weekday",required = false) Integer weekday,
-            @RequestParam(value = "pageNo",required = true,defaultValue = "1") Integer pageNo,
-            @RequestParam(value = "pageSize",required = true,defaultValue = "10") Integer pageSize
+            @RequestParam(value = "pageNo",required = false,defaultValue = "1") Integer pageNo,
+            @RequestParam(value = "pageSize",required = false,defaultValue = "10") Integer pageSize
     ){
         long startTime = System.currentTimeMillis();
         Map result = movieService.getMovieBySpecificTimeRequirement(year,month,day,season,weekday,pageNo,pageSize);
@@ -56,11 +54,41 @@ public class MovieController {
     public ResponseEntity<Map> getMovieByStyles(
             @RequestParam(value = "style_1",required = false) String style_1,
             @RequestParam(value = "style_2",required = false) String style_2,
-            @RequestParam(value = "pageNo",required = true,defaultValue = "1") Integer pageNo,
-            @RequestParam(value = "pageSize",required = true,defaultValue = "10") Integer pageSize
+            @RequestParam(value = "pageNo",required = false,defaultValue = "1") Integer pageNo,
+            @RequestParam(value = "pageSize",required = false,defaultValue = "10") Integer pageSize
     ){
         long startTime = System.currentTimeMillis();
         Map result = movieService.getMovieByStyles(style_1,style_2,pageNo,pageSize);
+        long endTime = System.currentTimeMillis();
+        System.out.println("程序运行时间：" + (endTime - startTime) + "ms");
+        result.put("time",endTime - startTime);
+        return ResponseEntity.ok(result);
+    }
+
+    @RequestMapping(value = "score",method = RequestMethod.GET)
+    public ResponseEntity<Map> getMovieByScores(
+            @RequestParam(value = "score_floor",required = false,defaultValue = "0.0") float score_floor,
+            @RequestParam(value = "score_ceiling",required = false,defaultValue = "5.0") float score_ceiling,
+            @RequestParam(value = "pageNo",required = false,defaultValue = "1") Integer pageNo,
+            @RequestParam(value = "pageSize",required = false,defaultValue = "10") Integer pageSize
+    ){
+        long startTime = System.currentTimeMillis();
+        Map result = movieService.getMovieByScores(score_floor,score_ceiling,pageNo,pageSize);
+        long endTime = System.currentTimeMillis();
+        System.out.println("程序运行时间：" + (endTime - startTime) + "ms");
+        result.put("time",endTime - startTime);
+        return ResponseEntity.ok(result);
+    }
+
+    @RequestMapping(value = "comment",method = RequestMethod.GET)
+    public ResponseEntity<Map> getMovieByCommentRate(
+            @RequestParam(value = "type",required = false,defaultValue = "positive") String type,
+            @RequestParam(value = "rate",required = false,defaultValue = "0.0") float rate,
+            @RequestParam(value = "pageNo",required = false,defaultValue = "1") Integer pageNo,
+            @RequestParam(value = "pageSize",required = false,defaultValue = "10") Integer pageSize
+    ){
+        long startTime = System.currentTimeMillis();
+        Map result = movieService.getMovieByCommentRate(type, rate,pageNo,pageSize);
         long endTime = System.currentTimeMillis();
         System.out.println("程序运行时间：" + (endTime - startTime) + "ms");
         result.put("time",endTime - startTime);
