@@ -14,5 +14,9 @@ public interface MovieService {
 
     Map getMovieByStyles(String style_1, String style_2, Integer pageNo, Integer pageSize);
 
+    Map getMovieByScores(float score_floor, float score_ceiling, Integer pageNo, Integer pageSize);
+
+    Map getMovieByCommentRate(String type, float proportion, Integer pageNo, Integer pageSize);
+
 
 }
