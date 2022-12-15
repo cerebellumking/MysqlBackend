@@ -72,6 +72,8 @@ public class MovieServiceImpl implements MovieService {
             movies.add(movieEntity.getMovieName());
         }
         result.put("movies",movies);
+
+        return result;
     }
 
 
