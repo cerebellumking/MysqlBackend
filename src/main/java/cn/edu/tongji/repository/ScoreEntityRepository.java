@@ -21,5 +21,6 @@ public interface ScoreEntityRepository
      * @param filter
      * @return
      */
+    @Override
     List<ScoreEntity> findAll(Specification<ScoreEntity> filter);
 }

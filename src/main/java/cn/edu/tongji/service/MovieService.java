@@ -1,7 +1,9 @@
 package cn.edu.tongji.service;
 
+import cn.edu.tongji.MovieInfoDTO;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @Service
@@ -19,4 +21,5 @@ public interface MovieService {
     Map getMovieByCommentRate(String type, float proportion, Integer pageNo, Integer pageSize);
 
 
+    HashMap<String, Object> getMovieResultsByMutipleRules(MovieInfoDTO movieInfoDTO);
 }

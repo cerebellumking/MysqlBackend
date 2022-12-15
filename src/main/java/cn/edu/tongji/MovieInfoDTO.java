@@ -10,7 +10,7 @@ import java.util.List;
  */
 public class MovieInfoDTO {
     private String movieName;
-    private String category;
+    private String style;
     private List<String> directorNames;
     private List<String> mainActors;
     private List<String> actors;
@@ -32,13 +32,14 @@ public class MovieInfoDTO {
         this.movieName = movieName;
     }
 
-    public String getCategory() {
-        return category;
+    public String getStyle() {
+        return style;
     }
 
-    public void setCategory(String category) {
-        this.category = category;
+    public void setStyle(String style) {
+        this.style = style;
     }
+
 
     public List<String> getDirectorNames() {
         return directorNames;

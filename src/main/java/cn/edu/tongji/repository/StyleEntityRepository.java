@@ -16,6 +16,9 @@ public interface StyleEntityRepository
     @Query(value = "select movie_id from t_style where movie_style like CONCAT('%',?1,'%')",nativeQuery = true)
     List<Integer> findMovieIdListByMovieStyle(String movie_style);
 
+    @Query(value = "select movie_style from t_style where movie_id = ?1",nativeQuery = true)
+    List<String> findMovieStyleListByMovieId(Integer movie_id);
+
 
 
 }

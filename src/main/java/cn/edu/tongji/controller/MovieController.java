@@ -1,11 +1,14 @@
 package cn.edu.tongji.controller;
-
+import cn.edu.tongji.MovieInfoDTO;
 import cn.edu.tongji.service.impl.MovieServiceImpl;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("mysql/movie")
@@ -94,4 +97,13 @@ public class MovieController {
         result.put("time",endTime - startTime);
         return ResponseEntity.ok(result);
     }
+
+    @RequestMapping(value = "result",method = RequestMethod.POST)
+    public ResponseEntity<Map> getMovieByMultipleConditions(
+            @RequestBody MovieInfoDTO movieInfoDTO
+    ){
+        HashMap<String, Object> result = movieService.getMovieResultsByMutipleRules(movieInfoDTO);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
 }
