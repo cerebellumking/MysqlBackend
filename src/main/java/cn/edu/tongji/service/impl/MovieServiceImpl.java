@@ -286,6 +286,29 @@ public class MovieServiceImpl implements MovieService {
             rulesNumber++;
         }
 
+        //按照正面评论比例查找 正面评价在positive之上
+        if(movieInfoDTO.getPositive() != null){
+            Specification<ScoreEntity> filter = ((root, query, criteriaBuilder)->{
+                List<Predicate> predicates = new ArrayList<>();
+                predicates.add(criteriaBuilder.ge(root.get("positiveRate"), movieInfoDTO.getPositive()/100));
+                return criteriaBuilder.and(predicates.toArray(new Predicate[predicates.size()]));
+            });
+
+
+            List<ScoreEntity> scoreEntityList = scoreEntityRepository.findAll(filter);
+            Set<Integer> movieIdSet = scoreEntityList.parallelStream()
+                    .map(scoreEntity -> scoreEntity.getMovieId())
+                    .collect(Collectors.toSet());
+
+            if(rulesNumber != 0){
+                resultMovieIdList.retainAll(movieIdSet);
+            }
+            else {
+                resultMovieIdList = movieIdSet;
+            }
+            rulesNumber++;
+        }
+
 
         //按照日期查询
         if(movieInfoDTO.getMinDay() != null){//由于前端是选择时间段，当这个参数不为空时，六个参数都不为空
@@ -335,22 +358,16 @@ public class MovieServiceImpl implements MovieService {
         for(MovieEntity movieEntity:resMovieEntityList){
 
             HashMap<String, Object> movieNode = new HashMap<>();//单个电影信息节点
-
-            movieNode.put("asin",movieEntity.getMovieAsin());
-            movieNode.put("title",movieEntity.getMovieName());
-            movieNode.put("formatNum",movieEntity.getMovieName());
-            movieNode.put("formatNameList",formatEntityRepository.findFormatNameByMovieId(movieEntity.getMovieId()));
-
+            movieNode.put("movieName",movieEntity.getMovieName());
+            movieNode.put("formatNum",movieEntity.getFormatNum());
+            movieNode.put("movieStyle",styleEntityRepository.findMovieStyleListByMovieId(movieEntity.getMovieId()));
+            TimeEntity movieTime = timeEntityRepository.findByTimeId(movieEntity.getTimeId());
+            movieNode.put("movieTime",movieTime.getMovieTime());
+            movieNode.put("director",directorEntityRepository.findDirectorByMovieId(movieEntity.getMovieId()));
+            movieNode.put("mainActor",actorEntityRepository.findMainActorNameByMovieId(movieEntity.getMovieId()));
+            movieNode.put("actor",actorEntityRepository.findActorNameByMovieId(movieEntity.getMovieId()));
             movieNode.put("score",movieEntity.getMovieScore());
             movieNode.put("reviewNum",movieEntity.getReviewNum());
-            movieNode.put("style",styleEntityRepository.findMovieStyleListByMovieId(movieEntity.getMovieId()));
-
-            //这里使用冗余字段time_str对结果的join作了优化,少join一张表
-
-            TimeEntity movieTime = timeEntityRepository.findByTimeId(movieEntity.getTimeId());
-            movieNode.put("year", movieTime.getYear());
-            movieNode.put("month", movieTime.getMonth());
-            movieNode.put("day",movieTime.getDay());
             movieResult.add(movieNode);
         }
         result.put("movies",movieResult);

@@ -14,4 +14,7 @@ public interface DirectorEntityRepository
         extends JpaRepository<DirectorEntity, DirectorEntityPK> , JpaSpecificationExecutor<DirectorEntity> {
     @Query(value = "select * from t_director where director = ?1",nativeQuery = true)
     List<DirectorEntity> findDirectorEntitiesByDirectorName(String directorName);
+
+    @Query(value = "select director from t_director where movie_id = ?1",nativeQuery = true)
+    List<String> findDirectorByMovieId(Integer movieId);
 }
