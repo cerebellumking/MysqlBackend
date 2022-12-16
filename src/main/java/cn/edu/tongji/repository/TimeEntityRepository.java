@@ -35,6 +35,7 @@ public interface TimeEntityRepository
 //   Page<TimeEntity> findAll(Specification<TimeEntity> filter, Pageable pageable);
    @Override
    List<TimeEntity> findAll(Specification<TimeEntity> filter);
+
    List<TimeEntity> findAllByMovieTimeAfterAndMovieTimeBefore(Timestamp minDate, Timestamp maxDate);
 
    TimeEntity findByTimeId(Integer timeId);
