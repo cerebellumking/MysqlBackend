@@ -16,6 +16,8 @@ public interface MovieService {
 
     List<MovieEntity> getMoviesByName(String movieName, Integer pageNo, Integer pageSize);
 
+    List<String> getMovieNameByStr(String movieName);
+
     Map<String,Object> getDirectorWorks(String directorName, Integer pageNo, Integer pageSize);
 
     Map<String,Object> getActorWorks(String actorName);
@@ -36,4 +38,8 @@ public interface MovieService {
 
 
     HashMap<String, Object> getMovieResultsByMutipleRules(MovieInfoDTO movieInfoDTO);
+
+    List<String> getActorNameByStr(String actorName, boolean isStar);
+
+    List<String> getDirectorNameByStr(String directorName);
 }

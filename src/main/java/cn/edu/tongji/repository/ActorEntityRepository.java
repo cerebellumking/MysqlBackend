@@ -2,6 +2,7 @@ package cn.edu.tongji.repository;
 
 import cn.edu.tongji.entity.ActorEntity;
 import cn.edu.tongji.entity.ActorEntityPK;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
@@ -24,6 +25,8 @@ public interface ActorEntityRepository
     List<String> findActorNameByMovieId(Integer movieId);
 
     List<ActorEntity> findByActorName(String name);
+
+    List<ActorEntity> findAllByActorNameStartingWithAndIsStar(String actorName, Boolean isStar, Pageable pageable);
 }
 
 

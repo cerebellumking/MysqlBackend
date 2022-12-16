@@ -193,12 +193,33 @@ public class MovieController {
         return ResponseEntity.ok(result);
     }
 
-    @RequestMapping(value = "result",method = RequestMethod.POST)
+    @RequestMapping(value = "association/result",method = RequestMethod.POST)
     public ResponseEntity<Map> getMovieByMultipleConditions(
             @RequestBody MovieInfoDTO movieInfoDTO
     ){
         HashMap<String, Object> result = movieService.getMovieResultsByMutipleRules(movieInfoDTO);
         return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "association/movieName",method = RequestMethod.GET)
+    public ResponseEntity<List<String>> getMovieNameListByString(
+            @RequestParam(value = "movieName") String movieName
+    ){
+        return new ResponseEntity<>(movieService.getMovieNameByStr(movieName), HttpStatus.OK);
+    }
+    @RequestMapping(value = "association/actorName",method = RequestMethod.GET)
+    public ResponseEntity<List<String>> getActorNameListByString(
+            @RequestParam(value = "actorName") String actorName,
+            @RequestParam(value = "isStar") boolean isStar
+    ){
+        return new ResponseEntity<>(movieService.getActorNameByStr(actorName,isStar), HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "association/directorName",method = RequestMethod.GET)
+    public ResponseEntity<List<String>> getDirectorNameListByString(
+            @RequestParam(value = "directorName") String directorName
+    ){
+        return new ResponseEntity<>(movieService.getDirectorNameByStr(directorName), HttpStatus.OK);
     }
 
 }
