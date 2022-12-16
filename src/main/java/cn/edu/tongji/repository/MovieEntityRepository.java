@@ -30,5 +30,13 @@ public interface MovieEntityRepository extends JpaRepository<MovieEntity,Integer
     @Query(value = "select * from t_movie where movie_id in ?1",nativeQuery = true)
     Page<MovieEntity> findMovieEntitiesByMovieIdIn(List<Integer> movieIdList, Pageable pageable);
 
+    List<MovieEntity> findMovieEntitiesByMovieName(String movieName);
+
+    @Query(value = "select movie_id from t_movie where time_id in ?1",nativeQuery = true)
+    List<Integer> findMovieIdByTimeIdIn(List<Integer> timeIdList);
+
+    MovieEntity findMovieEntityByMovieId(Integer movieId);
+
+
 
 }

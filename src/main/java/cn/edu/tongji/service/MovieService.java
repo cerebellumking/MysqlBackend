@@ -1,10 +1,12 @@
 package cn.edu.tongji.service;
 
+import cn.edu.tongji.MovieInfoDTO;
 import cn.edu.tongji.entity.ActorEntity;
 import cn.edu.tongji.entity.DirectorEntity;
 import cn.edu.tongji.entity.MovieEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -32,4 +34,6 @@ public interface MovieService {
 
     Map getMovieByCommentRate(String type, float proportion, Integer pageNo, Integer pageSize);
 
+
+    HashMap<String, Object> getMovieResultsByMutipleRules(MovieInfoDTO movieInfoDTO);
 }

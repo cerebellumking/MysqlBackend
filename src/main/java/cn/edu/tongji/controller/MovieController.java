@@ -1,5 +1,5 @@
 package cn.edu.tongji.controller;
-
+import cn.edu.tongji.MovieInfoDTO;
 import cn.edu.tongji.entity.ActorEntity;
 import cn.edu.tongji.entity.MovieEntity;
 import cn.edu.tongji.service.impl.MovieServiceImpl;
@@ -8,35 +8,17 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("mysql/movie")
 public class MovieController {
-    /**
-     * xx年，xx年xx季度，xx年xx月
-     */
-    @PostMapping(value = "/SpecificTimeMovie")
-    @ResponseBody   //接受前端json格式的数据
-    public ResponseEntity SpecificTimeMovie(
-            @RequestParam("year") Integer year,
-            @RequestParam(value="season",required = false,defaultValue = "0") Integer season,
-            @RequestParam(value="month",required = false,defaultValue = "0")Integer month,
-            @RequestParam(value="day",required = false,defaultValue = "0")Integer day
-    ){
-        //TODO:对年进行查询
-        if(year<1900||year>2030){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-        }
-
-        return ResponseEntity.ok("");
-    }
-
 
     @Resource
     private MovieServiceImpl movieService;
-
 
     @GetMapping("time/year")
     public ResponseEntity<Integer> getMovieNumByYear(int year){
@@ -210,4 +192,13 @@ public class MovieController {
         result.put("time",endTime - startTime);
         return ResponseEntity.ok(result);
     }
+
+    @RequestMapping(value = "result",method = RequestMethod.POST)
+    public ResponseEntity<Map> getMovieByMultipleConditions(
+            @RequestBody MovieInfoDTO movieInfoDTO
+    ){
+        HashMap<String, Object> result = movieService.getMovieResultsByMutipleRules(movieInfoDTO);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
 }
