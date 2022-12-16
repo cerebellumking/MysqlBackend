@@ -2,6 +2,7 @@ package cn.edu.tongji.repository;
 
 import cn.edu.tongji.entity.DirectorEntity;
 import cn.edu.tongji.entity.DirectorEntityPK;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
@@ -17,4 +18,6 @@ public interface DirectorEntityRepository
     List<String> findDirectorByMovieId(Integer movieId);
 
     List<DirectorEntity> findByDirector(String director_name);
+
+    List<DirectorEntity> findAllByDirectorStartingWith(String directorName, Pageable pageable);
 }

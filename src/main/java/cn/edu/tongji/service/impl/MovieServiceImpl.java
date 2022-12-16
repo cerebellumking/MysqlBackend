@@ -3,8 +3,6 @@ package cn.edu.tongji.service.impl;
 import cn.edu.tongji.MovieInfoDTO;
 import cn.edu.tongji.entity.*;
 import cn.edu.tongji.repository.*;
-import cn.edu.tongji.entity.*;
-import cn.edu.tongji.repository.*;
 import cn.edu.tongji.service.MovieService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -15,16 +13,18 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.springframework.data.domain.Sort;
+
 import org.springframework.data.jpa.domain.Specification;
 import javax.persistence.criteria.Predicate;
 import java.sql.Timestamp;
 import java.util.*;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import static java.lang.Math.min;
 
 @Service
 public class MovieServiceImpl implements MovieService {
+    private static final Pattern alphaPattern = Pattern.compile(".*[a-zA-Z]+.*");
     @Resource
     private TimeEntityRepository timeEntityRepository;
     @Resource
@@ -52,7 +52,6 @@ public class MovieServiceImpl implements MovieService {
     @Override
     public List<MovieEntity> getMoviesByName(String movieName, Integer pageNo, Integer pageSize){
         //List<HashMap<String,Object>> result=new ArrayList<>();
-
         /**
          *  分页参数Pageable
          *      参数1：查询的页码
@@ -64,6 +63,8 @@ public class MovieServiceImpl implements MovieService {
         return movieEntityRepository.findAllByMovieNameStartingWith(movieName, pageable);
 
     }
+
+
 
     @Override
     public Map<String,Object> getDirectorWorks(String directorName, Integer pageNo, Integer pageSize){
@@ -81,6 +82,54 @@ public class MovieServiceImpl implements MovieService {
 
         return result;
     }
+
+    @Override
+    public List<String> getMovieNameByStr(String movieName){
+        Pageable pageable = PageRequest.of(0, 15);
+        List<MovieEntity> movieEntities = new ArrayList<>();
+        if (movieName == null || !alphaPattern.matcher(movieName).matches()) {
+            movieEntities = movieEntityRepository.findAllByMovieNameStartingWith("A", pageable);
+        } else {
+            movieEntities = movieEntityRepository.findAllByMovieNameStartingWith(movieName, pageable);
+        }
+        List<String> movieNameList = movieEntities.parallelStream()
+                .map(MovieEntity::getMovieName)
+                .collect(Collectors.toList());
+        return movieNameList;
+    }
+
+    @Override
+    public List<String> getActorNameByStr(String actorName, boolean isStar){
+        Pageable pageable = PageRequest.of(0, 15);
+        List<ActorEntity> actorEntities = new ArrayList<>();
+        if (actorName == null || !alphaPattern.matcher(actorName).matches()) {
+            actorEntities = actorEntityRepository.findAllByActorNameStartingWithAndIsStar("A",isStar,pageable);
+        } else {
+            actorEntities = actorEntityRepository.findAllByActorNameStartingWithAndIsStar(actorName,isStar,pageable);
+        }
+        List<String> actorNameList = actorEntities.parallelStream()
+                .map(ActorEntity::getActorName)
+                .collect(Collectors.toList());
+        return actorNameList;
+
+
+    }
+
+    @Override
+    public List<String> getDirectorNameByStr(String directorName) {
+        Pageable pageable = PageRequest.of(0, 15);
+        List<DirectorEntity> directorEntities = new ArrayList<>();
+        if (directorName == null || !alphaPattern.matcher(directorName).matches()) {
+            directorEntities = directorEntityRepository.findAllByDirectorStartingWith("A", pageable);
+        } else {
+            directorEntities = directorEntityRepository.findAllByDirectorStartingWith(directorName, pageable);
+        }
+        List<String> directorNameList = directorEntities.parallelStream()
+                .map(directorEntity -> directorEntity.getDirector())
+                .collect(Collectors.toList());
+        return directorNameList;
+    }
+
 
 
     @Override
