@@ -88,7 +88,7 @@ public class MovieServiceImpl implements MovieService {
         Pageable pageable = PageRequest.of(0, 15);
         List<MovieEntity> movieEntities = new ArrayList<>();
         if (movieName == null || !alphaPattern.matcher(movieName).matches()) {
-            movieEntities = movieEntityRepository.findAllByMovieNameStartingWith("A", pageable);
+            movieEntities = movieEntityRepository.findAllByMovieNameStartingWith("L", pageable);
         } else {
             movieEntities = movieEntityRepository.findAllByMovieNameStartingWith(movieName, pageable);
         }
@@ -103,7 +103,7 @@ public class MovieServiceImpl implements MovieService {
         Pageable pageable = PageRequest.of(0, 15);
         List<ActorEntity> actorEntities = new ArrayList<>();
         if (actorName == null || !alphaPattern.matcher(actorName).matches()) {
-            actorEntities = actorEntityRepository.findAllByActorNameStartingWithAndIsStar("A",isStar,pageable);
+            actorEntities = actorEntityRepository.findAllByActorNameStartingWithAndIsStar("D",isStar,pageable);
         } else {
             actorEntities = actorEntityRepository.findAllByActorNameStartingWithAndIsStar(actorName,isStar,pageable);
         }
@@ -120,7 +120,7 @@ public class MovieServiceImpl implements MovieService {
         Pageable pageable = PageRequest.of(0, 15);
         List<DirectorEntity> directorEntities = new ArrayList<>();
         if (directorName == null || !alphaPattern.matcher(directorName).matches()) {
-            directorEntities = directorEntityRepository.findAllByDirectorStartingWith("A", pageable);
+            directorEntities = directorEntityRepository.findAllByDirectorStartingWith("J", pageable);
         } else {
             directorEntities = directorEntityRepository.findAllByDirectorStartingWith(directorName, pageable);
         }
@@ -296,12 +296,7 @@ public class MovieServiceImpl implements MovieService {
     @Override
     public HashMap<String, Object> getMovieResultsByMutipleRules(MovieInfoDTO movieInfoDTO) {
         HashMap<String,Object> result = new HashMap<>();
-        long startTime = System.currentTimeMillis();
-
-
-//        List<StyleEntity> styleEntityList =  new ArrayList<>();
         Set<Integer> resultMovieIdList = new HashSet<>();
-
         //当前已经得到的筛选条件数
         Integer rulesNumber = 0;
         //电影名称查询
@@ -331,14 +326,13 @@ public class MovieServiceImpl implements MovieService {
             Set<Integer> movieIdOfDirector = new HashSet<>();
             //筛选出导演实体
             for(int i =0;i<movieInfoDTO.getDirectorNames().size();i++){
+                directorMovieEntities = directorEntityRepository.findDirectorEntitiesByDirectorName(movieInfoDTO.getDirectorNames().get(i));
                 if(i==0){
-                    directorMovieEntities = directorEntityRepository.findDirectorEntitiesByDirectorName(movieInfoDTO.getDirectorNames().get(i));
                     movieIdOfDirector = directorMovieEntities.parallelStream()
                             .map(directorEntity -> directorEntity.getMovieId())
                             .collect(Collectors.toSet());
                 }
                 else{
-                    directorMovieEntities = directorEntityRepository.findDirectorEntitiesByDirectorName(movieInfoDTO.getDirectorNames().get(i));
                     Set<Integer> movieIdSet = directorMovieEntities.parallelStream()
                             .map(directorEntity -> directorEntity.getMovieId())
                             .collect(Collectors.toSet());
@@ -358,12 +352,11 @@ public class MovieServiceImpl implements MovieService {
         if(movieInfoDTO.getMainActors() != null){
             Set<Integer> movieIdOfMainActors = new HashSet<>();
             for(int i=0; i<movieInfoDTO.getMainActors().size();i++){
+                List<Integer> movieIdList = actorEntityRepository.findMovieIdListByStarName(movieInfoDTO.getMainActors().get(i));
                 if(i == 0){
-                    List<Integer> movieIdList = actorEntityRepository.findMovieIdListByStarName(movieInfoDTO.getMainActors().get(i));
                     movieIdOfMainActors = new HashSet<>(movieIdList);
                 }
                 else{
-                    List<Integer> movieIdList = actorEntityRepository.findMovieIdListByStarName(movieInfoDTO.getMainActors().get(i));
                     movieIdOfMainActors.retainAll(new HashSet<>(movieIdList));
                 }
             }
@@ -381,12 +374,11 @@ public class MovieServiceImpl implements MovieService {
         if(movieInfoDTO.getActors() != null){
             Set<Integer> movieIdOfActors = new HashSet<>();
             for(int i=0; i<movieInfoDTO.getActors().size();i++){
+                List<Integer> movieIdList = actorEntityRepository.findMovieIdListByNormalActorName(movieInfoDTO.getActors().get(i));
                 if(i == 0){
-                    List<Integer> movieIdList = actorEntityRepository.findMovieIdListByNormalActorName(movieInfoDTO.getActors().get(i));
                     movieIdOfActors = new HashSet<>(movieIdList);
                 }
                 else{
-                    List<Integer> movieIdList = actorEntityRepository.findMovieIdListByNormalActorName(movieInfoDTO.getActors().get(i));
                     movieIdOfActors.retainAll(new HashSet<>(movieIdList));
                 }
             }
@@ -408,7 +400,9 @@ public class MovieServiceImpl implements MovieService {
                 predicates.add(criteriaBuilder.le(root.get("movieScore"), Double.parseDouble(movieInfoDTO.getMaxScore()) ));
                 return criteriaBuilder.and(predicates.toArray(new Predicate[predicates.size()]));
             });
+
             List<ScoreEntity> scoreEntityList = scoreEntityRepository.findAll(filter);
+
             Set<Integer> movieIdSet = scoreEntityList.parallelStream()
                     .map(scoreEntity -> scoreEntity.getMovieId())
                     .collect(Collectors.toSet());
@@ -426,12 +420,12 @@ public class MovieServiceImpl implements MovieService {
         if(movieInfoDTO.getPositive() != null){
             Specification<ScoreEntity> filter = ((root, query, criteriaBuilder)->{
                 List<Predicate> predicates = new ArrayList<>();
-                predicates.add(criteriaBuilder.ge(root.get("positiveRate"), movieInfoDTO.getPositive()/100));
+                predicates.add(criteriaBuilder.gt(root.get("positiveRate"), movieInfoDTO.getPositive()));
                 return criteriaBuilder.and(predicates.toArray(new Predicate[predicates.size()]));
             });
 
-
             List<ScoreEntity> scoreEntityList = scoreEntityRepository.findAll(filter);
+
             Set<Integer> movieIdSet = scoreEntityList.parallelStream()
                     .map(scoreEntity -> scoreEntity.getMovieId())
                     .collect(Collectors.toSet());
@@ -463,7 +457,6 @@ public class MovieServiceImpl implements MovieService {
             Timestamp minDate = Timestamp.valueOf(minDateStr);
             Timestamp maxDate = Timestamp.valueOf(maxDateStr);
 
-
             List<TimeEntity> timeMovieEntities = timeEntityRepository.findAllByMovieTimeAfterAndMovieTimeBefore(minDate,maxDate);
 
             List<Integer> timeIdList = timeMovieEntities.parallelStream()
@@ -481,19 +474,23 @@ public class MovieServiceImpl implements MovieService {
             }
         }
 
-        long endTime = System.currentTimeMillis();
+
         //查询完毕
         //开始输出结果
         List<HashMap<String, Object>> movieResult = new ArrayList<>();
-        Pageable pageable = PageRequest.of(0, 10);//暂未确定传参方法
+        Integer pageNo = movieInfoDTO.getPageNo() != null? movieInfoDTO.getPageNo()-1 : 0;
+        Integer pageSize = movieInfoDTO.getPageSize() != null? movieInfoDTO.getPageSize() : 10;
+        Pageable pageable = PageRequest.of(pageNo, pageSize);
+        long startTime = System.currentTimeMillis();
         Page<MovieEntity> movieEntityPage = movieEntityRepository.findMovieEntitiesByMovieIdIn(new ArrayList<Integer>(resultMovieIdList), pageable);
-
+        long endTime = System.currentTimeMillis();
+        long searchTime = endTime - startTime;
         result.put("totalMovieNum",movieEntityPage.getTotalElements());
         List<MovieEntity> resMovieEntityList = movieEntityPage.getContent();
 
         for(MovieEntity movieEntity:resMovieEntityList){
-
-            HashMap<String, Object> movieNode = new HashMap<>();//单个电影信息节点
+            //单个电影信息节点
+            HashMap<String, Object> movieNode = new HashMap<>();
             movieNode.put("movieName",movieEntity.getMovieName());
             movieNode.put("formatNum",movieEntity.getFormatNum());
             movieNode.put("movieStyle",styleEntityRepository.findMovieStyleListByMovieId(movieEntity.getMovieId()));
@@ -507,7 +504,7 @@ public class MovieServiceImpl implements MovieService {
             movieResult.add(movieNode);
         }
         result.put("movies",movieResult);
-        result.put("time",endTime-startTime);
+        result.put("time",searchTime);
         return result;
     }
 

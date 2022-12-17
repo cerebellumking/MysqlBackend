@@ -8,10 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 @RestController
 @RequestMapping("mysql/movie")
@@ -20,6 +17,7 @@ public class MovieController {
     @Resource
     private MovieServiceImpl movieService;
 
+    @CrossOrigin("*")
     @GetMapping("time/year")
     public ResponseEntity<Integer> getMovieNumByYear(int year){
         long startTime = System.currentTimeMillis();
@@ -33,6 +31,7 @@ public class MovieController {
      * @param movieName
      * @return
      */
+    @CrossOrigin("*")
     @GetMapping("")
     public ResponseEntity getMovieByName(@RequestParam("movieName")String movieName,
                                          @RequestParam(value = "pageNo",required = false,defaultValue = "0")Integer pageNo,
@@ -54,6 +53,7 @@ public class MovieController {
      * @param pageSize
      * @return
      */
+    @CrossOrigin("*")
     @GetMapping(value="/directorWorks")
     public ResponseEntity getMovieByDirector(@RequestParam(value = "directorName") String directorName,
                                              @RequestParam(value = "pageNo",required = false,defaultValue = "0")Integer pageNo,
@@ -73,6 +73,7 @@ public class MovieController {
      * @param actorName
      * @return
      */
+    @CrossOrigin("*")
     @GetMapping(value="/actorWorks")
     public ResponseEntity getMovieByActor(@RequestParam(value = "actorName") String actorName){
         long startTime = System.currentTimeMillis();
@@ -92,6 +93,7 @@ public class MovieController {
      * @param pageSize
      * @return
      */
+    @CrossOrigin("*")
     @GetMapping("DirectorActorCoop")
     public ResponseEntity getDirectorActorCoop(
                                          @RequestParam(value = "pageNo",required = false,defaultValue = "0")Integer pageNo,
@@ -106,6 +108,7 @@ public class MovieController {
         return ResponseEntity.ok(result);
     }
 
+    @CrossOrigin("*")
     @GetMapping("ActorCoop")
     public ResponseEntity getActorCoop(
             @RequestParam(value = "pageNo",required = false,defaultValue = "0")Integer pageNo,
@@ -130,6 +133,7 @@ public class MovieController {
 //        return ResponseEntity.ok(result);
 //    }
 
+    @CrossOrigin("*")
     @RequestMapping(value = "time/condition",method = RequestMethod.GET)
     public ResponseEntity<Map> getMovieNumByYearAndMonth(
             @RequestParam(value = "year",required = false) Integer year,
@@ -148,6 +152,7 @@ public class MovieController {
         return ResponseEntity.ok(result);
     }
 
+    @CrossOrigin("*")
     @RequestMapping(value = "style",method = RequestMethod.GET)
     public ResponseEntity<Map> getMovieByStyles(
             @RequestParam(value = "style_1",required = false) String style_1,
@@ -163,6 +168,7 @@ public class MovieController {
         return ResponseEntity.ok(result);
     }
 
+    @CrossOrigin("*")
     @RequestMapping(value = "score",method = RequestMethod.GET)
     public ResponseEntity<Map> getMovieByScores(
             @RequestParam(value = "score_floor",required = false,defaultValue = "0.0") float score_floor,
@@ -178,6 +184,7 @@ public class MovieController {
         return ResponseEntity.ok(result);
     }
 
+    @CrossOrigin("*")
     @RequestMapping(value = "comment",method = RequestMethod.GET)
     public ResponseEntity<Map> getMovieByCommentRate(
             @RequestParam(value = "type",required = false,defaultValue = "positive") String type,
@@ -193,6 +200,7 @@ public class MovieController {
         return ResponseEntity.ok(result);
     }
 
+    @CrossOrigin("*")
     @RequestMapping(value = "association/result",method = RequestMethod.POST)
     public ResponseEntity<Map> getMovieByMultipleConditions(
             @RequestBody MovieInfoDTO movieInfoDTO
@@ -201,25 +209,29 @@ public class MovieController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
+    @CrossOrigin("*")
     @RequestMapping(value = "association/movieName",method = RequestMethod.GET)
     public ResponseEntity<List<String>> getMovieNameListByString(
             @RequestParam(value = "movieName") String movieName
     ){
         return new ResponseEntity<>(movieService.getMovieNameByStr(movieName), HttpStatus.OK);
     }
+
+    @CrossOrigin("*")
     @RequestMapping(value = "association/actorName",method = RequestMethod.GET)
-    public ResponseEntity<List<String>> getActorNameListByString(
+    public ResponseEntity<Set<String>> getActorNameListByString(
             @RequestParam(value = "actorName") String actorName,
             @RequestParam(value = "isStar") boolean isStar
     ){
-        return new ResponseEntity<>(movieService.getActorNameByStr(actorName,isStar), HttpStatus.OK);
+        return new ResponseEntity<>(new HashSet<>(movieService.getActorNameByStr(actorName,isStar)), HttpStatus.OK);
     }
 
+    @CrossOrigin("*")
     @RequestMapping(value = "association/directorName",method = RequestMethod.GET)
-    public ResponseEntity<List<String>> getDirectorNameListByString(
+    public ResponseEntity<Set<String>> getDirectorNameListByString(
             @RequestParam(value = "directorName") String directorName
     ){
-        return new ResponseEntity<>(movieService.getDirectorNameByStr(directorName), HttpStatus.OK);
+        return new ResponseEntity<>(new HashSet<>(movieService.getDirectorNameByStr(directorName)), HttpStatus.OK);
     }
 
 }

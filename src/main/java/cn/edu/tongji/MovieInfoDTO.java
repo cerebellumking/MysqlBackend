@@ -22,7 +22,9 @@ public class MovieInfoDTO {
     private Integer maxYear;
     private Integer maxMonth;
     private Integer maxDay;
-    private Integer positive;
+    private Double positive;
+    private Integer pageNo;
+    private Integer pageSize;
 
     public String getMovieName() {
         return movieName;
@@ -129,11 +131,27 @@ public class MovieInfoDTO {
         this.maxDay = maxDay;
     }
 
-    public Integer getPositive() {
+    public Double getPositive() {
         return positive;
     }
 
-    public void setPositive(Integer positive) {
+    public void setPositive(Double positive) {
         this.positive = positive;
+    }
+
+    public Integer getPageNo() {
+        return pageNo;
+    }
+
+    public void setPageNo(Integer pageNo) {
+        this.pageNo = pageNo;
+    }
+
+    public Integer getPageSize() {
+        return pageSize;
+    }
+
+    public void setPageSize(Integer pageSize) {
+        this.pageSize = pageSize;
     }
 }
