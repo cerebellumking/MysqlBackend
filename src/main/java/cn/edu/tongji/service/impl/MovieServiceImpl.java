@@ -297,16 +297,23 @@ public class MovieServiceImpl implements MovieService {
         Set<Integer> resultMovieIdList = new HashSet<>();
         //当前已经得到的筛选条件数
         Integer rulesNumber = 0;
+        long totalTime = 0;
         //电影名称查询
         if(movieInfoDTO.getMovieName() != null){
             rulesNumber++;
+            long startTime = System.currentTimeMillis();
             for(MovieEntity movieEntity:movieEntityRepository.findMovieEntitiesByMovieName(movieInfoDTO.getMovieName())){
                 resultMovieIdList.add(movieEntity.getMovieId());
             }
+            long endTime = System.currentTimeMillis();
+            totalTime += endTime - startTime;
         }
         //电影类别查询
         if(movieInfoDTO.getStyle() != null){
+            long startTime = System.currentTimeMillis();
             List<Integer> movieIdList = styleEntityRepository.findMovieIdListByMovieStyle(movieInfoDTO.getStyle());
+            long endTime = System.currentTimeMillis();
+            totalTime += endTime - startTime;
             Set<Integer> movieIdOfStyle = new HashSet<>(movieIdList);
 
             if(rulesNumber != 0){
@@ -324,7 +331,10 @@ public class MovieServiceImpl implements MovieService {
             Set<Integer> movieIdOfDirector = new HashSet<>();
             //筛选出导演实体
             for(int i =0;i<movieInfoDTO.getDirectorNames().size();i++){
+                long startTime = System.currentTimeMillis();
                 directorMovieEntities = directorEntityRepository.findDirectorEntitiesByDirectorName(movieInfoDTO.getDirectorNames().get(i));
+                long endTime = System.currentTimeMillis();
+                totalTime += endTime - startTime;
                 if(i==0){
                     movieIdOfDirector = directorMovieEntities.parallelStream()
                             .map(directorEntity -> directorEntity.getMovieId())
@@ -350,7 +360,10 @@ public class MovieServiceImpl implements MovieService {
         if(movieInfoDTO.getMainActors() != null){
             Set<Integer> movieIdOfMainActors = new HashSet<>();
             for(int i=0; i<movieInfoDTO.getMainActors().size();i++){
+                long startTime = System.currentTimeMillis();
                 List<Integer> movieIdList = actorEntityRepository.findMovieIdListByStarName(movieInfoDTO.getMainActors().get(i));
+                long endTime = System.currentTimeMillis();
+                totalTime += endTime - startTime;
                 if(i == 0){
                     movieIdOfMainActors = new HashSet<>(movieIdList);
                 }
@@ -372,7 +385,10 @@ public class MovieServiceImpl implements MovieService {
         if(movieInfoDTO.getActors() != null){
             Set<Integer> movieIdOfActors = new HashSet<>();
             for(int i=0; i<movieInfoDTO.getActors().size();i++){
+                long startTime = System.currentTimeMillis();
                 List<Integer> movieIdList = actorEntityRepository.findMovieIdListByNormalActorName(movieInfoDTO.getActors().get(i));
+                long endTime = System.currentTimeMillis();
+                totalTime += endTime - startTime;
                 if(i == 0){
                     movieIdOfActors = new HashSet<>(movieIdList);
                 }
@@ -398,9 +414,10 @@ public class MovieServiceImpl implements MovieService {
                 predicates.add(criteriaBuilder.le(root.get("movieScore"), Double.parseDouble(movieInfoDTO.getMaxScore()) ));
                 return criteriaBuilder.and(predicates.toArray(new Predicate[predicates.size()]));
             });
-
+            long startTime = System.currentTimeMillis();
             List<ScoreEntity> scoreEntityList = scoreEntityRepository.findAll(filter);
-
+            long endTime = System.currentTimeMillis();
+            totalTime += endTime - startTime;
             Set<Integer> movieIdSet = scoreEntityList.parallelStream()
                     .map(scoreEntity -> scoreEntity.getMovieId())
                     .collect(Collectors.toSet());
@@ -421,9 +438,10 @@ public class MovieServiceImpl implements MovieService {
                 predicates.add(criteriaBuilder.gt(root.get("positiveRate"), movieInfoDTO.getPositive()));
                 return criteriaBuilder.and(predicates.toArray(new Predicate[predicates.size()]));
             });
-
+            long startTime = System.currentTimeMillis();
             List<ScoreEntity> scoreEntityList = scoreEntityRepository.findAll(filter);
-
+            long endTime = System.currentTimeMillis();
+            totalTime += endTime - startTime;
             Set<Integer> movieIdSet = scoreEntityList.parallelStream()
                     .map(scoreEntity -> scoreEntity.getMovieId())
                     .collect(Collectors.toSet());
@@ -454,9 +472,10 @@ public class MovieServiceImpl implements MovieService {
 
             Timestamp minDate = Timestamp.valueOf(minDateStr);
             Timestamp maxDate = Timestamp.valueOf(maxDateStr);
-
+            long startTime = System.currentTimeMillis();
             List<TimeEntity> timeMovieEntities = timeEntityRepository.findAllByMovieTimeAfterAndMovieTimeBefore(minDate,maxDate);
-
+            long endTime = System.currentTimeMillis();
+            totalTime += endTime - startTime;
             List<Integer> timeIdList = timeMovieEntities.parallelStream()
                     .map(timeEntity -> timeEntity.getTimeId())
                     .collect(Collectors.toList());
@@ -502,7 +521,7 @@ public class MovieServiceImpl implements MovieService {
             movieResult.add(movieNode);
         }
         result.put("movies",movieResult);
-        result.put("time",searchTime);
+        result.put("time",totalTime);
         return result;
     }
 
