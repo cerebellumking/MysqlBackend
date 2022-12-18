@@ -197,19 +197,17 @@ public class MovieServiceImpl implements MovieService {
 
     @Override
     public Map getDirectorActorCoop(Integer pageNo, Integer pageSize){
-        Pageable pageable = PageRequest.of(pageNo, pageSize);
-        Page<ViewDirectorActorTime> coopList = directorActorCoopRepository.findAll(pageable);
+        List<ViewDirectorActorTime> coopList = directorActorCoopRepository.findMostCoop();
         Map result = new HashMap<>();
-        result.put("cooperation",coopList.getContent());
+        result.put("cooperation",coopList);
         return result;
     }
 
     @Override
     public Map getActorCoop(Integer pageNo, Integer pageSize){
-        Pageable pageable = PageRequest.of(pageNo, pageSize);
-        Page<ViewActorActorTime> coopList = actorCoopRepository.findAll(pageable);
+        List<ViewActorActorTime> coopList = actorCoopRepository.findMostCoop();
         Map result = new HashMap<>();
-        result.put("cooperation",coopList.getContent());
+        result.put("cooperation",coopList);
         return result;
     }
 
